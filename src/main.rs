@@ -23,6 +23,7 @@ struct Game {
     gl: GlGraphics,
     snake: Snake,
     food: Food,
+    paused: bool,
 }
 
 impl Game {
@@ -38,7 +39,7 @@ impl Game {
         self.food.render(&mut self.gl, arg);
     }
     fn update(&mut self){
-        if self.snake.alive{
+        if self.snake.alive && !self.paused{
             self.snake.update(&mut self.food);
         }
     }
@@ -59,6 +60,13 @@ impl Game {
         if (btn == &Button::Keyboard(Key::Space)) && (self.snake.alive == false){
             self.snake.revive();
             self.food.genFood(&mut self.snake);
+        }
+        if (btn == &Button::Keyboard(Key::P)) {
+            self.paused = true;
+        }
+
+        if (btn == &Button::Keyboard(Key::R)){
+            self.paused = false;
         }
     }
 }
@@ -193,7 +201,8 @@ fn main() {
         food: Food {
             food: (rand::thread_rng().gen_range(0..14), rand::thread_rng().gen_range(0..14)),
             isEaten: false,
-        }
+        },
+        paused: false,
     };
 
     let mut events = Events::new(EventSettings::new()).ups(6);
